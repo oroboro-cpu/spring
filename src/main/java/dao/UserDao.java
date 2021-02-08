@@ -1,8 +1,7 @@
 package dao;
 
-import model.User;
-
 import java.util.List;
+import model.User;
 
 public interface UserDao {
     void add(User user);
