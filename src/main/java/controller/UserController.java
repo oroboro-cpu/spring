@@ -4,6 +4,7 @@ import dto.UserResponseDto;
 import java.util.List;
 import java.util.stream.Collectors;
 import model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,9 +16,12 @@ import service.UserService;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
+    private final UserMapper userMapper;
 
-    public UserController(UserService userService) {
+    @Autowired
+    public UserController(UserService userService, UserMapper userMapper) {
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     @GetMapping("/inject")
@@ -35,14 +39,14 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public UserResponseDto get(@PathVariable Long userId) {
-        return UserMapper.toDto(userService.get(userId));
+        return userMapper.toDto(userService.get(userId));
     }
 
     @GetMapping
     public List<UserResponseDto> getAll() {
         return userService.listUsers()
                 .stream()
-                .map(UserMapper::toDto)
+                .map(userMapper::toDto)
                 .collect(Collectors.toList());
     }
 }
