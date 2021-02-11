@@ -1,6 +1,8 @@
 package dao;
 
+import exception.DataProcessingException;
 import java.util.List;
+import java.util.Optional;
 import model.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -28,7 +30,7 @@ public class UserDaoImpl implements UserDao {
             if (transaction != null) {
                 transaction.rollback();
             }
-            throw new RuntimeException("Can't add user: " + user, e);
+            throw new DataProcessingException("Can't add user: " + user, e);
         } finally {
             if (session != null) {
                 session.close();
@@ -41,7 +43,16 @@ public class UserDaoImpl implements UserDao {
         try (Session session = sessionFactory.openSession()) {
             return session.createQuery("SELECT u FROM User u", User.class).getResultList();
         } catch (Exception e) {
-            throw new RuntimeException("Can't list all users", e);
+            throw new DataProcessingException("Can't list all users", e);
+        }
+    }
+
+    @Override
+    public Optional<User> get(Long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return Optional.ofNullable(session.get(User.class, id));
+        } catch (Exception e) {
+            throw new DataProcessingException("Can't find user", e);
         }
     }
 }
